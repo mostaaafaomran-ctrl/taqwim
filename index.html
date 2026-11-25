@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تقويم | Hijri ⇄ Gregorian date converter with Egyptian holidays</title>
+<meta name="description" content="Taqwim: convert Hijri and Gregorian dates both ways, see today's Hijri date, and the next Islamic and Egyptian holidays with countdowns. Offline, no signup.">
+<meta property="og:title" content="تقويم | Taqwim">
+<meta property="og:description" content="Hijri and Gregorian converter with Egyptian holidays and countdowns. Runs in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%230b2a35'/%3E%3Cpath d='M62 22a30 30 0 1 0 0 56 24 24 0 1 1 0-56z' fill='%23f1d98a'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#07202a;--bg2:#0d3441;--card:#0f3b4a;--ln:#1d5a6d;--tx:#e8f4f2;--dim:#8fb7bd;--gold:#f1d98a;--mint:#6fe0c3}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--tx);font:16px/1.6 "Noto Naskh Arabic","Segoe UI",Tahoma,system-ui,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,#14586b 0,transparent 60%),radial-gradient(900px 500px at 0 110%,#0c4a3f 0,transparent 55%),var(--bg)}
+body:before{content:"";position:fixed;inset:0;background-image:radial-gradient(#fff6 1px,transparent 1.5px),radial-gradient(#fff4 1px,transparent 1.5px);background-size:90px 90px,140px 140px;background-position:0 0,40px 60px;opacity:.35;pointer-events:none}
+.wrap{position:relative;max-width:1000px;margin:0 auto;padding:22px 18px 50px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{margin:0;font-size:30px;color:var(--gold);letter-spacing:.5px}h1 small{font:600 14px system-ui;color:var(--dim);margin-inline-start:10px;letter-spacing:2px}
+.off{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--dim)}
+.off button{background:transparent;border:1px solid var(--ln);color:var(--tx);border-radius:8px;padding:3px 10px;cursor:pointer;font:inherit}
+.off button.on{background:var(--gold);color:#07202a;border-color:var(--gold)}
+.today{margin:22px 0;border:1px solid var(--ln);border-radius:20px;background:linear-gradient(135deg,#0f4a5c,#0b2f3b);padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.today .big{font-size:42px;line-height:1.15;color:var(--gold);font-weight:700}
+.today .lab{color:var(--dim);font-size:13px;letter-spacing:1px;text-transform:uppercase;font-family:system-ui}
+.today .sub{direction:ltr;text-align:right;color:var(--tx);opacity:.85;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:color-mix(in srgb,var(--card) 85%,transparent);border:1px solid var(--ln);border-radius:16px;padding:18px}
+.card h2{margin:0 0 12px;font-size:18px;color:var(--mint)}
+label{display:block;font-size:13px;color:var(--dim);margin:8px 0 3px}
+input,select{width:100%;background:#06242d;color:var(--tx);border:1px solid var(--ln);border-radius:10px;padding:9px 11px;font:inherit}
+.row{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:8px}
+.res{margin-top:14px;padding:14px;border-radius:12px;background:#06242d;border:1px dashed var(--ln);font-size:20px;min-height:64px}
+.res b{color:var(--gold)}
+.res .e{display:block;font:14px system-ui;color:var(--dim);margin-top:4px;direction:ltr;text-align:right}
+h3{margin:28px 0 10px;font-size:18px;color:var(--mint)}
+.list{display:grid;gap:8px}
+.h{display:grid;grid-template-columns:78px 1fr auto;gap:14px;align-items:center;border:1px solid var(--ln);border-radius:12px;padding:10px 14px;background:#0a2f3a}
+.h .n{font:700 26px/1 system-ui;color:var(--gold);text-align:center}.h .n small{display:block;font:600 11px system-ui;color:var(--dim);margin-top:2px}
+.h .t{font-size:17px}.h .t span{display:block;font:13px system-ui;color:var(--dim);direction:ltr;text-align:right}
+.tag{font:600 11px system-ui;border-radius:99px;padding:3px 9px;border:1px solid var(--ln);color:var(--dim)}
+.tag.hijri{color:var(--mint);border-color:#2a7f70}
+.note{margin-top:26px;color:var(--dim);font-size:13px;line-height:1.7}
+footer{margin-top:20px;color:var(--dim);font:13px system-ui;text-align:center}footer a{color:var(--gold)}
+@media(max-width:720px){.today,.grid{grid-template-columns:1fr}.today .big{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>تقويم<small>TAQWIM</small></h1>
+<div class="off"><span>تعديل رؤية الهلال / Moon-sighting offset:</span>
+<button data-o="-1">-1</button><button data-o="0" class="on">0</button><button data-o="1">+1</button></div></header>
+
+<section class="today"><div><div class="lab">Today · Hijri</div><div class="big" id="th"></div><div class="sub" id="the"></div></div>
+<div><div class="lab">Today · Gregorian</div><div class="big" id="tg"></div><div class="sub" id="tge"></div></div></section>
+
+<div class="grid">
+<section class="card"><h2>ميلادي ← هجري · Gregorian → Hijri</h2>
+<label for="gd">التاريخ الميلادي / Gregorian date</label><input type="date" id="gd">
+<div class="res" id="r1"></div></section>
+<section class="card"><h2>هجري ← ميلادي · Hijri → Gregorian</h2>
+<div class="row"><div><label for="hy">السنة</label><input type="number" id="hy" min="1300" max="1600"></div>
+<div><label for="hm">الشهر</label><select id="hm"></select></div>
+<div><label for="hd">اليوم</label><input type="number" id="hd" min="1" max="30"></div></div>
+<div class="res" id="r2"></div></section>
+</div>
+
+<h3>الإجازات والمناسبات القادمة · Upcoming holidays</h3>
+<div class="list" id="hol"></div>
+
+<p class="note">التقويم الهجري المستخدم هو أم القرى كما يحسبه المتصفح. دار الإفتاء المصرية تعتمد على رؤية الهلال، فقد يختلف اليوم بفارق يوم واحد: استخدم زر التعديل أعلاه. المواعيد تقريبية ولا تغني عن الإعلان الرسمي. · Uses the Umm al-Qura calendar from your browser. Egypt's Dar al-Ifta relies on moon sighting, so a date can differ by one day: use the offset. Holiday dates are estimates, check the official announcement.</p>
+<footer>Runs in your browser, nothing is uploaded · <a href="https://github.com/mostaaafaomran-ctrl/taqwim">GitHub</a></footer>
+</div>
+<script src="core.js"></script>
+<script>
+(function(){
+var T=Taqwim,off=0,$=function(i){return document.getElementById(i)};
+var AR=new Intl.NumberFormat('ar-EG',{useGrouping:false});
+function ymd(d){return d.toISOString().slice(0,10)}
+function gtxt(d){return T.WD_AR[d.getUTCDay()]+' '+AR.format(d.getUTCDate())+' '+T.GM_AR[d.getUTCMonth()]+' '+AR.format(d.getUTCFullYear())}
+function gen(d){return d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})}
+function htxt(h){return AR.format(h.d)+' '+T.HM_AR[h.m-1]+' '+AR.format(h.y)+' هـ'}
+function hen(h){return h.d+' '+T.HM_EN[h.m-1]+' '+h.y+' AH'}
+var now=new Date(),today=T.utc(now.getFullYear(),now.getMonth()+1,now.getDate());
+$('hm').innerHTML=T.HM_AR.map(function(m,i){return '<option value="'+(i+1)+'">'+(i+1)+' · '+m+'</option>'}).join('');
+function render(){
+  var h=T.g2h(today,off);
+  $('th').textContent=htxt(h);$('the').textContent=hen(h);
+  $('tg').textContent=gtxt(today);$('tge').textContent=gen(today);
+  var g=$('gd').value?$('gd').value.split('-').map(Number):null;
+  if(g){var d=T.utc(g[0],g[1],g[2]),hh=T.g2h(d,off);$('r1').innerHTML='<b>'+htxt(hh)+'</b><span class="e">'+hen(hh)+'</span>';}
+  var y=+$('hy').value,m=+$('hm').value,dd=+$('hd').value;
+  if(y>=1300&&y<=1600&&dd>=1){var ml=T.monthLen(y,m,off);
+    if(dd>ml){$('r2').innerHTML='هذا الشهر '+AR.format(ml)+' يومًا فقط<span class="e">This month has '+ml+' days</span>';}
+    else{var x=T.h2g(y,m,dd,off);$('r2').innerHTML=x?'<b>'+gtxt(x)+'</b><span class="e">'+gen(x)+'</span>':'—';}}
+  $('hol').innerHTML=T.upcoming(today,off,10).map(function(u){
+    var dt=u.date;return '<div class="h"><div class="n">'+(u.days===0?'اليوم':u.days)+'<small>'+(u.days===0?'TODAY':'days')+'</small></div><div class="t">'+u.ar+'<span>'+u.en+' · '+ymd(dt)+'</span></div><div class="tag '+u.type+'">'+(u.type==='hijri'?'هجري':'رسمي')+'</div></div>';}).join('');
+}
+var h0=T.g2h(today,0);$('gd').value=ymd(today);$('hy').value=h0.y;$('hm').value=h0.m;$('hd').value=h0.d;
+['gd','hy','hm','hd'].forEach(function(i){$(i).addEventListener('input',render)});
+Array.prototype.forEach.call(document.querySelectorAll('.off button'),function(b){b.onclick=function(){off=+b.dataset.o;Array.prototype.forEach.call(document.querySelectorAll('.off button'),function(x){x.classList.toggle('on',x===b)});render()}});
+render();
+})();
+</script>
+</body></html>
